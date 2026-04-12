@@ -1,6 +1,5 @@
-﻿pipeline {
+pipeline {
     agent any
-
     stages {
         stage('Clone Repository') {
             steps {
@@ -8,14 +7,12 @@
                 checkout scm
             }
         }
-
         stage('Build') {
             steps {
                 echo 'Building containerized application...'
                 sh 'docker-compose -f docker-compose.jenkins.yml build'
             }
         }
-
         stage('Deploy') {
             steps {
                 echo 'Starting containers...'
@@ -23,7 +20,6 @@
             }
         }
     }
-
     post {
         success {
             echo 'Pipeline completed! App is running on port 8081.'
