@@ -1,0 +1,39 @@
+﻿version: '3.8'
+
+services:
+  web:
+    image: python:3.9-slim
+    container_name: ssis_web_jenkins
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && gunicorn --bind 0.0.0.0:5001 run:app"
+    ports:
+      - "8081:5001"
+    environment:
+      - DB_HOST=db_jenkins
+      - DB_USER=root
+      - DB_PASSWORD=AleySQLZayb029
+      - DB_NAME=ssis
+    depends_on:
+      db_jenkins:
+        condition: service_healthy
+    restart: always
+
+  db_jenkins:
+    image: mysql:8.0
+    container_name: ssis_db_jenkins
+    environment:
+      - MYSQL_ROOT_PASSWORD=AleySQLZayb029
+      - MYSQL_DATABASE=ssis
+    volumes:
+      - ssis_db_data_jenkins:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pAleySQLZayb029"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+volumes:
+  ssis_db_data_jenkins:
